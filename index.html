@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#2E1F4F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="兔子糖果夜">
+<meta name="format-detection" content="telephone=no">
+<title>兔子糖果夜 · เก็บลูกอมฮาโลวีน</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cellipse cx='33' cy='27' rx='8' ry='20' fill='%23FFF5E9' stroke='%232B1B3D' stroke-width='5'/%3E%3Cellipse cx='67' cy='27' rx='8' ry='20' fill='%23FFF5E9' stroke='%232B1B3D' stroke-width='5'/%3E%3Ccircle cx='50' cy='62' r='29' fill='%23FFF5E9' stroke='%232B1B3D' stroke-width='5'/%3E%3Ccircle cx='40' cy='58' r='4' fill='%232B1B3D'/%3E%3Ccircle cx='60' cy='58' r='4' fill='%232B1B3D'/%3E%3Cpath d='M44 70q6 6 12 0' stroke='%232B1B3D' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+</head>
+<body>
+<div id="app">
+  <canvas id="cv"></canvas>
+
+  <!-- ================= HUD ================= -->
+  <div id="hud" class="hud">
+    <div class="hud-top">
+      <div class="hud-side">
+        <button id="btnPause" class="icon-btn" aria-label="暂停">❚❚</button>
+      </div>
+      <div class="score-wrap">
+        <div id="score" class="score">0</div>
+        <div class="score-label">คะแนน · 分</div>
+      </div>
+      <div class="hud-side right">
+        <button id="btnSfx" class="icon-btn" aria-label="声音">♪</button>
+      </div>
+    </div>
+    <div class="bars">
+      <div class="bar time"><i id="timeFill"></i></div>
+      <div class="bar fever" id="feverBar"><i id="feverFill"></i></div>
+    </div>
+    <div id="combo" class="combo">×1.0 <small>连击 0</small></div>
+  </div>
+  <div id="feverTip" class="fever-tip">狂欢模式！</div>
+  <div id="loveTip" class="love-tip">
+    <div class="love-heart">♥</div>
+    <div class="love-text">今天也辛苦了</div>
+    <div class="love-th th">วันนี้เหนื่อยมาทั้งวันแล้ว</div>
+  </div>
+
+  <!-- ================= 首页 ================= -->
+  <div id="scrTitle" class="screen on">
+    <button id="btnBookTop" class="book-chip">
+      <canvas id="bookIcon" class="book-icon" width="40" height="40"></canvas>
+      <span id="bookCount">0/8</span>
+    </button>
+    <div class="sound-chips">
+      <button id="tgSfx" class="chip on">♪ 音效</button>
+      <button id="tgBgm" class="chip">♫ 音乐</button>
+    </div>
+    <div class="wrap">
+      <div class="brand"><i></i>FOR PINK_PROUD</div>
+      <h1 class="title"><span>万圣节</span><span>糖果大作战</span></h1>
+      <div class="subtitle th" id="subtitle">เกมเก็บลูกอมฮาโลวีน</div>
+
+      <div class="panel">
+        <div id="faces" class="faces"></div>
+
+        <div class="diff-row">
+          <span class="diff-key">难度</span>
+          <div class="diff-pills" id="diffPills">
+            <button class="diff-pill on" data-d="easy">简单</button>
+            <button class="diff-pill" data-d="normal">中等</button>
+            <button class="diff-pill" data-d="hard">困难</button>
+          </div>
+        </div>
+
+        <div class="code-row">
+          <span class="code-key">关卡码</span>
+          <span id="codeVal" class="code-val">------</span>
+          <button id="btnNewCode" class="icon-mini" aria-label="换一个码">↻</button>
+        </div>
+        <div id="codeNote" class="code-note th">ฝนลูกอมชุดเดียวกัน</div>
+
+        <button id="btnStart" class="btn primary big">
+          <span>开始游戏</span>
+          <span class="th">เริ่มเลย</span>
+        </button>
+        <button id="btnEnter" class="link-btn">有对方的关卡码？点这里输入</button>
+      </div>
+    </div>
+    <div class="foot">MADE WITH 🎃 FOR PINK_PROUD</div>
+  </div>
+
+  <!-- ================= 结算 ================= -->
+  <div id="scrOver" class="screen">
+    <div class="wrap">
+      <div class="over-head" id="overHead">时间到 <span class="th">หมดเวลา</span></div>
+      <div id="overScore" class="over-score">0</div>
+      <div class="over-score-label">คะแนน · 分</div>
+      <div id="rankPill" class="rank-pill">小兔子</div>
+      <div id="bestBadge" class="best-badge">NEW · 新的最好成绩</div>
+
+      <div class="stats">
+        <div class="stat"><b id="stCombo">0</b><span>最高连击</span></div>
+        <div class="stat"><b id="stCandy">0</b><span>抓到糖果</span></div>
+        <div class="stat"><b id="stCode">--</b><span>关卡码</span></div>
+      </div>
+
+      <div id="compare" class="compare">
+        <div class="compare-title">同一场糖果雨 · ฝนลูกอมชุดเดียวกัน</div>
+        <div class="compare-row">
+          <div class="cmp" id="cmpMe"><em>你 · YOU</em><b>0</b></div>
+          <div class="cmp-vs">VS</div>
+          <div class="cmp" id="cmpYou"><em>TA</em><b>0</b></div>
+        </div>
+      </div>
+
+      <button id="rewardStrip" class="reward">
+        <div class="reward-thumbs" id="rewardThumbs"></div>
+        <div class="reward-meta">
+          <b id="rewardName">新贴纸</b>
+          <span id="rewardCount">点开贴纸册</span>
+        </div>
+      </button>
+
+      <button id="btnRetry" class="btn primary big">
+        <span>再来一局</span>
+        <span class="th">เล่นอีกครั้ง</span>
+      </button>
+      <div class="row2">
+        <button id="btnShare" class="btn secondary">分享成绩<span class="th">แชร์คะแนน</span></button>
+        <button id="btnCard" class="btn ghost">保存成绩卡<span class="th">บันทึกการ์ด</span></button>
+      </div>
+      <button id="btnHome" class="link-btn light">回首页</button>
+    </div>
+  </div>
+
+  <!-- ================= 暂停 ================= -->
+  <div id="scrPause" class="screen pause">
+    <div class="wrap center">
+      <div class="panel small">
+        <h2>暂停<span class="th">หยุดพัก</span></h2>
+        <button id="btnResume" class="btn primary">继续 <span class="th">เล่นต่อ</span></button>
+        <button id="btnRestart" class="btn secondary">重开一局</button>
+        <button id="btnHome2" class="btn ghost">回首页</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 成绩卡弹窗 ================= -->
+  <div id="modalCard" class="modal">
+    <div class="modal-inner">
+      <h3>成绩卡</h3>
+      <p class="hint">长按图片保存到相册 ·<br>或在电脑上右键另存</p>
+      <img id="cardImg" alt="成绩卡">
+      <a id="cardDl" class="btn ghost" download="pink-bunny.png">下载图片</a>
+      <button class="btn secondary" data-close="modalCard">关闭</button>
+    </div>
+  </div>
+
+  <!-- ================= 输入关卡码 ================= -->
+  <div id="modalCode" class="modal">
+    <div class="modal-inner">
+      <h3>输入关卡码</h3>
+      <p class="hint">6 位字母数字 · ใส่รหัสด่าน 6 ตัว</p>
+      <input id="codeInput" class="code-input" type="text" inputmode="text" autocomplete="off"
+             autocapitalize="characters" spellcheck="false" maxlength="6" placeholder="ABC123">
+      <button id="btnCodeOk" class="btn primary">确定</button>
+      <button class="btn ghost" data-close="modalCode">取消</button>
+    </div>
+  </div>
+
+  <!-- ================= 贴纸册 ================= -->
+  <div id="modalBook" class="modal">
+    <div class="modal-inner">
+      <h3>兔子贴纸册</h3>
+      <p class="hint" id="bookHint">每局至少得 1 张 · ได้อย่างน้อย 1 แผ่นทุกเกม</p>
+      <div class="book-grid" id="bookGrid"></div>
+      <button class="btn secondary" data-close="modalBook">关闭</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+</div>
+
+<script src="art.js"></script>
+<script src="audio.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
